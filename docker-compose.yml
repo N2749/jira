@@ -1,0 +1,26 @@
+volumes:
+  postgres_data:
+
+services:
+  db:
+    image: postgis/postgis
+    volumes:
+      - postgres_data:/var/lib/postgres/data
+    environment:
+      - POSTGRES_USER=dev
+      - POSTGRES_PASSWORD=secret
+      - POSTGRES_DB=jira
+    ports:
+      - "5432:5432"
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: python:3.10.0-slim-buster
+    command: python manage.py runserver 0:8080
+    ports:
+      - "8080:8080"
+    working_dir: /jira
+    depends_on:
+      - db
